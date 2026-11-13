@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 830" width="1000" height="830" font-family="Segoe UI, Arial, sans-serif" font-size="12">
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b6b64"/></marker></defs>
+<rect x="0" y="0" width="1000" height="830" fill="#ffffff"/>
+<text x="20" y="28" font-size="17" font-weight="600" fill="#1a1a18">Holiday Maker – programmets flöde</text>
+<rect x="420" y="44" width="160" height="34" rx="17" fill="#eef0f3" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="500" y="65" text-anchor="middle" fill="#1a1a18">Start</text>
+<line x1="500" y1="78" x2="500" y2="96" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="380" y="96" width="240" height="40" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="500" y="120" text-anchor="middle" fill="#1a1a18">Läs config.json och anslut till MySQL</text>
+<line x1="500" y1="136" x2="500" y2="152" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<polygon points="500,152 590,182 500,212 410,182" fill="#fff7e0" stroke="#b8860b" stroke-width="1.5"/>
+<text x="500" y="186" text-anchor="middle" fill="#1a1a18">Anslutning ok?</text>
+<line x1="590" y1="182" x2="690" y2="182" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="612" y="176" fill="#6b6b64" font-size="11">nej</text>
+<rect x="690" y="160" width="230" height="44" rx="6" fill="#fdecec" stroke="#c0392b" stroke-width="1.5"/>
+<text x="805" y="179" text-anchor="middle" fill="#1a1a18">Felmeddelande med tips,</text>
+<text x="805" y="193" text-anchor="middle" fill="#1a1a18">programmet avslutas</text>
+<line x1="500" y1="212" x2="500" y2="232" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="508" y="227" fill="#6b6b64" font-size="11">ja</text>
+<rect x="330" y="232" width="340" height="44" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="500" y="258" text-anchor="middle" font-weight="600" fill="#ffffff">HUVUDMENY – välj 1–6 eller 0</text>
+<line x1="330" y1="254" x2="250" y2="254" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<text x="275" y="248" fill="#6b6b64" font-size="11">0</text>
+<rect x="90" y="237" width="160" height="34" rx="17" fill="#eef0f3" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="170" y="258" text-anchor="middle" fill="#1a1a18">Avsluta – Slut</text>
+<line x1="500" y1="276" x2="500" y2="296" stroke="#6b6b64" stroke-width="1.5"/>
+<line x1="95" y1="296" x2="905" y2="296" stroke="#6b6b64" stroke-width="1.5"/>
+<line x1="95" y1="296" x2="95" y2="316" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="316" width="150" height="34" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="95" y="337" text-anchor="middle" font-weight="600" fill="#ffffff">1  Välj kund</text>
+<line x1="95" y1="350" x2="95" y2="368" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="368" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="95" y="399" text-anchor="middle" fill="#1a1a18">Visa kundlistan</text>
+<line x1="95" y1="422" x2="95" y2="440" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="440" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="95" y="464" text-anchor="middle" fill="#1a1a18">Välj kundnummer,</text>
+<text x="95" y="478" text-anchor="middle" fill="#1a1a18">eller 0 = ny kund</text>
+<line x1="95" y1="494" x2="95" y2="512" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="512" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="95" y="536" text-anchor="middle" fill="#1a1a18">Ny kund: namn, e-post,</text>
+<text x="95" y="550" text-anchor="middle" fill="#1a1a18">telefon – INSERT</text>
+<line x1="95" y1="566" x2="95" y2="584" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="584" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="95" y="615" text-anchor="middle" fill="#1a1a18">Kunden är vald</text>
+<line x1="95" y1="638" x2="95" y2="742" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="257" y1="296" x2="257" y2="316" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="182" y="316" width="150" height="34" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="257" y="337" text-anchor="middle" font-weight="600" fill="#ffffff">2  Sök lediga rum</text>
+<line x1="257" y1="350" x2="257" y2="368" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="182" y="368" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="257" y="392" text-anchor="middle" fill="#1a1a18">Ort, incheckning,</text>
+<text x="257" y="406" text-anchor="middle" fill="#1a1a18">utcheckning, personer</text>
+<line x1="257" y1="422" x2="257" y2="440" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="182" y="440" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="257" y="464" text-anchor="middle" fill="#1a1a18">Valfria filter: pool,</text>
+<text x="257" y="478" text-anchor="middle" fill="#1a1a18">restaurang, avstånd</text>
+<line x1="257" y1="494" x2="257" y2="512" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="182" y="512" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="257" y="536" text-anchor="middle" fill="#1a1a18">Sortering: pris</text>
+<text x="257" y="550" text-anchor="middle" fill="#1a1a18">eller omdöme</text>
+<line x1="257" y1="566" x2="257" y2="584" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="182" y="584" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="257" y="608" text-anchor="middle" fill="#1a1a18">SQL: SELECT med</text>
+<text x="257" y="622" text-anchor="middle" fill="#1a1a18">NOT EXISTS mot bokningar</text>
+<line x1="257" y1="638" x2="257" y2="656" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="182" y="656" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="257" y="687" text-anchor="middle" fill="#1a1a18">Visa lediga rum</text>
+<line x1="257" y1="710" x2="257" y2="742" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="419" y1="296" x2="419" y2="316" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="316" width="150" height="34" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="419" y="337" text-anchor="middle" font-weight="600" fill="#ffffff">3  Skapa bokning</text>
+<line x1="419" y1="350" x2="419" y2="368" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="368" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="419" y="399" text-anchor="middle" fill="#1a1a18">Kräver vald kund</text>
+<line x1="419" y1="422" x2="419" y2="440" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="440" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="419" y="464" text-anchor="middle" fill="#1a1a18">Sökningen körs om</text>
+<text x="419" y="478" text-anchor="middle" fill="#1a1a18">mot databasen</text>
+<line x1="419" y1="494" x2="419" y2="512" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="512" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="419" y="543" text-anchor="middle" fill="#1a1a18">Välj rum ur listan</text>
+<line x1="419" y1="566" x2="419" y2="584" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="584" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="419" y="608" text-anchor="middle" fill="#1a1a18">Transaktion: lås rummet,</text>
+<text x="419" y="622" text-anchor="middle" fill="#1a1a18">kontrollera igen</text>
+<line x1="419" y1="638" x2="419" y2="656" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="344" y="656" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="419" y="673" text-anchor="middle" fill="#1a1a18">Ledigt och ryms: INSERT,</text>
+<text x="419" y="687" text-anchor="middle" fill="#1a1a18">bekräftelse med nr och</text>
+<text x="419" y="701" text-anchor="middle" fill="#1a1a18">nätter × pris. Annars nekas</text>
+<line x1="419" y1="710" x2="419" y2="742" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="581" y1="296" x2="581" y2="316" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="506" y="316" width="150" height="34" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="581" y="337" text-anchor="middle" font-weight="600" fill="#ffffff">4  Visa bokningar</text>
+<line x1="581" y1="350" x2="581" y2="368" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="506" y="368" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="581" y="399" text-anchor="middle" fill="#1a1a18">Kräver vald kund</text>
+<line x1="581" y1="422" x2="581" y2="440" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="506" y="440" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="581" y="464" text-anchor="middle" fill="#1a1a18">SQL: SELECT kundens</text>
+<text x="581" y="478" text-anchor="middle" fill="#1a1a18">bokningar</text>
+<line x1="581" y1="494" x2="581" y2="512" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="506" y="512" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="581" y="529" text-anchor="middle" fill="#1a1a18">Lista: nr, boende, rum,</text>
+<text x="581" y="543" text-anchor="middle" fill="#1a1a18">datum, personer,</text>
+<text x="581" y="557" text-anchor="middle" fill="#1a1a18">totalpris</text>
+<line x1="581" y1="566" x2="581" y2="742" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="743" y1="296" x2="743" y2="316" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="668" y="316" width="150" height="34" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="743" y="337" text-anchor="middle" font-weight="600" fill="#ffffff">5  Ändra personer</text>
+<line x1="743" y1="350" x2="743" y2="368" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="668" y="368" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="743" y="392" text-anchor="middle" fill="#1a1a18">Välj bokning ur</text>
+<text x="743" y="406" text-anchor="middle" fill="#1a1a18">kundens lista</text>
+<line x1="743" y1="422" x2="743" y2="440" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="668" y="440" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="743" y="464" text-anchor="middle" fill="#1a1a18">Ange nytt antal</text>
+<text x="743" y="478" text-anchor="middle" fill="#1a1a18">personer</text>
+<line x1="743" y1="494" x2="743" y2="512" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="668" y="512" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="743" y="529" text-anchor="middle" fill="#1a1a18">Ryms i rummet: UPDATE.</text>
+<text x="743" y="543" text-anchor="middle" fill="#1a1a18">Annars nekas, bokningen</text>
+<text x="743" y="557" text-anchor="middle" fill="#1a1a18">är oförändrad</text>
+<line x1="743" y1="566" x2="743" y2="742" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<line x1="905" y1="296" x2="905" y2="316" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="830" y="316" width="150" height="34" rx="6" fill="#2f6df6" stroke="#2f6df6" stroke-width="1.5"/>
+<text x="905" y="337" text-anchor="middle" font-weight="600" fill="#ffffff">6  Avboka</text>
+<line x1="905" y1="350" x2="905" y2="368" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="830" y="368" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="905" y="392" text-anchor="middle" fill="#1a1a18">Välj bokning ur</text>
+<text x="905" y="406" text-anchor="middle" fill="#1a1a18">kundens lista</text>
+<line x1="905" y1="422" x2="905" y2="440" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="830" y="440" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="905" y="471" text-anchor="middle" fill="#1a1a18">Bekräfta j/n</text>
+<line x1="905" y1="494" x2="905" y2="512" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="830" y="512" width="150" height="54" rx="6" fill="#ffffff" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="905" y="536" text-anchor="middle" fill="#1a1a18">DELETE – rummet är</text>
+<text x="905" y="550" text-anchor="middle" fill="#1a1a18">ledigt igen</text>
+<line x1="905" y1="566" x2="905" y2="742" stroke="#6b6b64" stroke-width="1.5" marker-end="url(#a)"/>
+<rect x="20" y="742" width="960" height="36" rx="6" fill="#eef0f3" stroke="#6b6b64" stroke-width="1.5"/>
+<text x="500" y="764" text-anchor="middle" fill="#1a1a18">Tryck Enter – tillbaka till huvudmenyn</text>
+<text x="20" y="800" fill="#6b6b64" font-size="11">Skriv avbryt vid vilken fråga som helst för att gå tillbaka till menyn utan att något sparas. Felaktig inmatning ger en ny fråga i stället för att avsluta programmet.</text>
+<text x="20" y="816" fill="#6b6b64" font-size="11">All sökning, filtrering och sortering görs av SQL i databasen, med parametrar.</text>
+</svg>

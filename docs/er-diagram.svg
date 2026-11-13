@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 704" width="720" height="704" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="12">
+  <rect x="0" y="0" width="720" height="704" fill="#ffffff"/>
+
+  <text x="24" y="30" font-size="16" font-weight="600" fill="#1a1a18">Holiday Maker – E/R-diagram</text>
+  <text x="24" y="50" font-size="11.5" fill="#6b6b64">Databasen holiday_maker: fyra tabeller, tre relationer. Varje bokning binder en kund till ett rum.</text>
+
+  <!-- ============================ relationer ============================ -->
+  <g fill="none" stroke="#7a7a73" stroke-width="1.5">
+    <path d="M314 150H406"/>
+    <path d="M551 273V337"/>
+    <path d="M314 440H406"/>
+  </g>
+  <g font-size="12" font-weight="600" fill="#1a1a18">
+    <text x="321" y="144">1</text>
+    <text x="390" y="144">N</text>
+    <text x="559" y="290">1</text>
+    <text x="559" y="331">N</text>
+    <text x="321" y="434">1</text>
+    <text x="390" y="434">N</text>
+  </g>
+
+  <!-- ============================ accommodation ============================ -->
+  <g>
+    <rect x="24" y="76" width="290" height="242" rx="8" fill="#ffffff" stroke="#7a7a73" stroke-width="1.25"/>
+    <text x="169" y="98" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a18">accommodation</text>
+    <path d="M24 110H314" stroke="#7a7a73" stroke-width="1"/>
+
+    <text x="38" y="126" font-size="10" font-weight="700" fill="#1a1a18">PK</text>
+    <text x="68" y="126" fill="#1a1a18" data-table="accommodation" data-col="id" data-type="int unsigned">id</text>
+    <text x="192" y="126" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="68" y="146" fill="#1a1a18" data-table="accommodation" data-col="name" data-type="varchar(100)">name</text>
+    <text x="192" y="146" font-size="11" fill="#6b6b64">VARCHAR(100)</text>
+
+    <text x="68" y="166" fill="#1a1a18" data-table="accommodation" data-col="city" data-type="varchar(60)">city</text>
+    <text x="192" y="166" font-size="11" fill="#6b6b64">VARCHAR(60)</text>
+
+    <text x="68" y="186" fill="#1a1a18" data-table="accommodation" data-col="has_pool" data-type="boolean">has_pool</text>
+    <text x="192" y="186" font-size="11" fill="#6b6b64">BOOLEAN</text>
+
+    <text x="68" y="206" fill="#1a1a18" data-table="accommodation" data-col="has_restaurant" data-type="boolean">has_restaurant</text>
+    <text x="192" y="206" font-size="11" fill="#6b6b64">BOOLEAN</text>
+
+    <text x="68" y="226" fill="#1a1a18" data-table="accommodation" data-col="beach_distance_m" data-type="int unsigned">beach_distance_m</text>
+    <text x="192" y="226" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="68" y="246" fill="#1a1a18" data-table="accommodation" data-col="center_distance_m" data-type="int unsigned">center_distance_m</text>
+    <text x="192" y="246" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="68" y="266" fill="#1a1a18" data-table="accommodation" data-col="rating" data-type="tinyint unsigned">rating</text>
+    <text x="192" y="266" font-size="11" fill="#6b6b64">TINYINT UNSIGNED</text>
+
+    <path d="M38 276H300" stroke="#c9c8c2" stroke-width="1"/>
+    <text x="38" y="292" font-size="10.5" fill="#6b6b64">UNIQUE (name, city)</text>
+    <text x="38" y="307" font-size="10.5" fill="#6b6b64">CHECK (rating BETWEEN 1 AND 5)</text>
+  </g>
+
+  <!-- ============================ room ============================ -->
+  <g>
+    <rect x="406" y="76" width="290" height="197" rx="8" fill="#ffffff" stroke="#7a7a73" stroke-width="1.25"/>
+    <text x="551" y="98" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a18">room</text>
+    <path d="M406 110H696" stroke="#7a7a73" stroke-width="1"/>
+
+    <text x="420" y="126" font-size="10" font-weight="700" fill="#1a1a18">PK</text>
+    <text x="450" y="126" fill="#1a1a18" data-table="room" data-col="id" data-type="int unsigned">id</text>
+    <text x="574" y="126" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="420" y="146" font-size="10" font-weight="700" fill="#1a1a18">FK</text>
+    <text x="450" y="146" fill="#1a1a18" data-table="room" data-col="accommodation_id" data-type="int unsigned">accommodation_id</text>
+    <text x="574" y="146" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="450" y="166" fill="#1a1a18" data-table="room" data-col="room_number" data-type="varchar(10)">room_number</text>
+    <text x="574" y="166" font-size="11" fill="#6b6b64">VARCHAR(10)</text>
+
+    <text x="450" y="186" fill="#1a1a18" data-table="room" data-col="capacity" data-type="tinyint unsigned">capacity</text>
+    <text x="574" y="186" font-size="11" fill="#6b6b64">TINYINT UNSIGNED</text>
+
+    <text x="450" y="206" fill="#1a1a18" data-table="room" data-col="price_per_night" data-type="decimal(8,2)">price_per_night</text>
+    <text x="574" y="206" font-size="11" fill="#6b6b64">DECIMAL(8,2)</text>
+
+    <path d="M420 216H682" stroke="#c9c8c2" stroke-width="1"/>
+    <text x="420" y="232" font-size="10.5" fill="#6b6b64">UNIQUE (accommodation_id, room_number)</text>
+    <text x="420" y="247" font-size="10.5" fill="#6b6b64">CHECK (capacity &gt;= 1)</text>
+    <text x="420" y="262" font-size="10.5" fill="#6b6b64">CHECK (price_per_night &gt; 0)</text>
+  </g>
+
+  <!-- ============================ customer ============================ -->
+  <g>
+    <rect x="24" y="380" width="290" height="167" rx="8" fill="#ffffff" stroke="#7a7a73" stroke-width="1.25"/>
+    <text x="169" y="402" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a18">customer</text>
+    <path d="M24 414H314" stroke="#7a7a73" stroke-width="1"/>
+
+    <text x="38" y="430" font-size="10" font-weight="700" fill="#1a1a18">PK</text>
+    <text x="68" y="430" fill="#1a1a18" data-table="customer" data-col="id" data-type="int unsigned">id</text>
+    <text x="192" y="430" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="68" y="450" fill="#1a1a18" data-table="customer" data-col="first_name" data-type="varchar(60)">first_name</text>
+    <text x="192" y="450" font-size="11" fill="#6b6b64">VARCHAR(60)</text>
+
+    <text x="68" y="470" fill="#1a1a18" data-table="customer" data-col="last_name" data-type="varchar(60)">last_name</text>
+    <text x="192" y="470" font-size="11" fill="#6b6b64">VARCHAR(60)</text>
+
+    <text x="68" y="490" fill="#1a1a18" data-table="customer" data-col="email" data-type="varchar(120)">email</text>
+    <text x="192" y="490" font-size="11" fill="#6b6b64">VARCHAR(120)</text>
+
+    <text x="68" y="510" fill="#1a1a18" data-table="customer" data-col="phone" data-type="varchar(30)">phone</text>
+    <text x="192" y="510" font-size="11" fill="#6b6b64">VARCHAR(30)</text>
+
+    <path d="M38 520H300" stroke="#c9c8c2" stroke-width="1"/>
+    <text x="38" y="536" font-size="10.5" fill="#6b6b64">UNIQUE (email)</text>
+  </g>
+
+  <!-- ============================ booking ============================ -->
+  <g>
+    <rect x="406" y="337" width="290" height="252" rx="8" fill="#eaf1fe" stroke="#2f6df6" stroke-width="2"/>
+    <text x="551" y="359" text-anchor="middle" font-size="14" font-weight="600" fill="#1a1a18">booking</text>
+    <path d="M406 371H696" stroke="#2f6df6" stroke-width="1"/>
+
+    <text x="420" y="387" font-size="10" font-weight="700" fill="#1a1a18">PK</text>
+    <text x="450" y="387" fill="#1a1a18" data-table="booking" data-col="id" data-type="int unsigned">id</text>
+    <text x="574" y="387" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="420" y="407" font-size="10" font-weight="700" fill="#1a1a18">FK</text>
+    <text x="450" y="407" fill="#1a1a18" data-table="booking" data-col="room_id" data-type="int unsigned">room_id</text>
+    <text x="574" y="407" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="420" y="427" font-size="10" font-weight="700" fill="#1a1a18">FK</text>
+    <text x="450" y="427" fill="#1a1a18" data-table="booking" data-col="customer_id" data-type="int unsigned">customer_id</text>
+    <text x="574" y="427" font-size="11" fill="#6b6b64">INT UNSIGNED</text>
+
+    <text x="450" y="447" fill="#1a1a18" data-table="booking" data-col="check_in" data-type="date">check_in</text>
+    <text x="574" y="447" font-size="11" fill="#6b6b64">DATE</text>
+
+    <text x="450" y="467" fill="#1a1a18" data-table="booking" data-col="check_out" data-type="date">check_out</text>
+    <text x="574" y="467" font-size="11" fill="#6b6b64">DATE</text>
+
+    <text x="450" y="487" fill="#1a1a18" data-table="booking" data-col="guests" data-type="tinyint unsigned">guests</text>
+    <text x="574" y="487" font-size="11" fill="#6b6b64">TINYINT UNSIGNED</text>
+
+    <text x="450" y="507" fill="#1a1a18" data-table="booking" data-col="created_at" data-type="datetime">created_at</text>
+    <text x="574" y="507" font-size="11" fill="#6b6b64">DATETIME</text>
+
+    <path d="M420 517H682" stroke="#a9c3f7" stroke-width="1"/>
+    <text x="420" y="533" font-size="10.5" fill="#6b6b64">CHECK (check_out &gt; check_in)</text>
+    <text x="420" y="548" font-size="10.5" fill="#6b6b64">CHECK (guests &gt;= 1)</text>
+    <text x="420" y="563" font-size="10.5" fill="#6b6b64">TRIGGER: guests får inte överstiga rummets capacity</text>
+    <text x="420" y="578" font-size="10.5" fill="#6b6b64">TRIGGER: ingen annan bokning av rummet får krocka</text>
+  </g>
+
+  <!-- ============================ förklaringar ============================ -->
+  <g font-size="10.5" fill="#6b6b64">
+    <text x="24" y="623">PK = primärnyckel · FK = främmande nyckel · 1 — N = en till många · alla kolumner är NOT NULL · BOOLEAN lagras som TINYINT(1)</text>
+    <text x="24" y="641">Radering: rum följer med sitt boende och bokningar med sin kund (CASCADE). Ett rum som har bokningar kan inte tas bort (RESTRICT).</text>
+    <text x="24" y="659">Totalpris lagras inte. Det räknas ut som antal nätter × price_per_night när det visas.</text>
+    <text x="24" y="677">Ett rum är ledigt när ingen bokning har check_in &lt; ny utcheckning och check_out &gt; ny incheckning. Utcheckningsdagen är alltså ledig.</text>
+  </g>
+</svg>
