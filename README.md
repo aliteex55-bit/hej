@@ -16,6 +16,7 @@ src/HolidayMaker/            Konsolapplikationens källkod
 docs/er-diagram.pdf          E/R-diagram
 docs/testprotokoll.md        Hur lösningen är testad, och resultaten
 docs/reflektion.md           Individuell reflektion
+flodesschema.html            Klickbart flödesschema: varje steg i programmet med koden bakom
 ```
 
 Källkoden består av sex filer:
@@ -28,6 +29,9 @@ Källkoden består av sex filer:
 | `Input.cs` | Inläsning som frågar om i stället för att krascha |
 | `Models.cs` | Dataklasserna: kund, ledigt rum, bokning, sökvillkor |
 | `Db.cs` | Läser anslutningssträngen och öppnar anslutningar |
+
+**Flödesschema:** [öppna det klickbara flödesschemat](https://aliteex55-bit.github.io/hej/flodesschema.html).
+Klicka på ett steg för att se den C#-kod som utför det, med en kort förklaring.
 
 ## E/R-diagram
 
