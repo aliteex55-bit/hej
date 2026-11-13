@@ -185,7 +185,7 @@ Med testdatat nyinläst ger de här stegen exakt de här svaren:
 | Välj kund | `1`, sedan `1` | Vald kund: Anna Lindqvist |
 | Sök | `2`, ort `2` (Malmö), `2026-12-14`, `2026-12-16`, `2`, Enter fem gånger | 4 lediga rum: 101, 102, 203, 103 |
 | Boka | `3`, Enter, rum-id `2` | Bokningsnummer 26, rum 102, 2 nätter × 1 450,00 kr = 2 900,00 kr |
-| Visa | `4` | 6 bokningar, den nya med nummer 26 |
+| Visa | `4` | 5 bokningar, den nya med nummer 26 |
 | Ändra | `5`, `26`, `4` | Nekas: rum 102 tar högst 2 personer |
 | Ändra | `5`, `26`, `1` | Bokning 26 gäller nu 1 person |
 | Avboka | `6`, `26`, `j` | Bokning 26 är avbokad, rum 102 är ledigt igen |
