@@ -17,6 +17,7 @@ docs/er-diagram.pdf          E/R-diagram
 docs/testprotokoll.md        Hur lösningen är testad, och resultaten
 docs/reflektion.md           Individuell reflektion
 flodesschema.html            Klickbart flödesschema: varje steg i programmet med koden bakom
+databasschema.html           Klickbart E/R-diagram: varje tabell, kolumn och relation med SQL-koden bakom
 ```
 
 Källkoden består av sex filer:
@@ -38,6 +39,9 @@ Klicka på ett steg för att se den C#-kod som utför det, med en kort förklari
 Fyra tabeller och tre relationer. Ett boende har många rum, och varje
 bokning gäller ett rum och en kund. Samma diagram finns som PDF i
 `docs/er-diagram.pdf`.
+
+**Klickbart:** [öppna det klickbara E/R-diagrammet](https://aliteex55-bit.github.io/hej/databasschema.html).
+Klicka på en tabell, kolumn eller relation för att se SQL-koden bakom, med en kort förklaring.
 
 ```mermaid
 erDiagram

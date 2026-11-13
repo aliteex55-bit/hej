@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Holiday Maker – databas och SQL</title>
+<style>
+:root {
+  --bg: #ffffff; --panel: #f6f7f9; --text: #1a1a18; --muted: #5f6368; --line: #c9ccd1;
+  --accent: #2f6df6; --accent-soft: #e6eefe; --code-bg: #fbfbfc; --hl: #fff3bf;
+  --er-stroke: #9370db; --er-head: #ececff; --er-odd: #f4f4ff; --er-even: #ffffff; --er-rel: #333333; --er-sel: #ffe58a;
+  --c-kw: #0b55c8; --c-str: #a3320b; --c-com: #5d7a5d; --c-par: #b8002e; --c-num: #0e7c6b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --panel: #1e2126; --text: #e8e8e6; --muted: #a2a6ad; --line: #3a3f47;
+    --accent: #5b8cff; --accent-soft: #223050; --code-bg: #1a1c21; --hl: #4a4116;
+    --er-stroke: #a58be6; --er-head: #2c2748; --er-odd: #22202f; --er-even: #1a1924; --er-rel: #c8c8d0; --er-sel: #5a4b12;
+    --c-kw: #7fb0ff; --c-str: #f0a37f; --c-com: #86a886; --c-par: #ff8fa8; --c-num: #6fd6c4;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --panel: #1e2126; --text: #e8e8e6; --muted: #a2a6ad; --line: #3a3f47;
+  --accent: #5b8cff; --accent-soft: #223050; --code-bg: #1a1c21; --hl: #4a4116;
+  --er-stroke: #a58be6; --er-head: #2c2748; --er-odd: #22202f; --er-even: #1a1924; --er-rel: #c8c8d0; --er-sel: #5a4b12;
+  --c-kw: #7fb0ff; --c-str: #f0a37f; --c-com: #86a886; --c-par: #ff8fa8; --c-num: #6fd6c4;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 "Segoe UI", system-ui, Arial, sans-serif; }
+header { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+header h1 { font-size: 18px; margin: 0; font-weight: 600; }
+header .hint { color: var(--muted); font-size: 13px; flex: 1; min-width: 200px; }
+button { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, .node:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); height: calc(100% - 55px); }
+#chart { padding: 12px 16px; overflow: auto; border-right: 1px solid var(--line); }
+#chart svg { width: 100%; height: auto; display: block; font: 12px "Segoe UI", system-ui, Arial, sans-serif; }
+#chart h2 { font-size: 14px; margin: 18px 0 8px; color: var(--muted); font-weight: 600; }
+.morelist { display: flex; flex-wrap: wrap; gap: 8px; }
+.more.sel { background: var(--accent-soft); border-color: var(--accent); font-weight: 600; }
+#panel { padding: 16px 20px 40px; overflow: auto; }
+.node { cursor: pointer; }
+.node text { fill: var(--text); pointer-events: none; }
+.head rect { fill: var(--er-head); stroke: var(--er-stroke); }
+.col rect { stroke: var(--er-stroke); stroke-width: .5; }
+.col.odd rect { fill: var(--er-odd); }
+.col.even rect { fill: var(--er-even); }
+.sep { stroke: var(--er-stroke); stroke-width: .5; }
+.frame { fill: none; stroke: var(--er-stroke); stroke-width: 1; pointer-events: none; }
+.head:hover rect, .col:hover rect { fill: var(--accent-soft); }
+.ent.sel .frame { stroke: var(--accent); stroke-width: 3; }
+.ent.sel .head rect { fill: var(--accent-soft); }
+.col.on rect { fill: var(--er-sel); }
+.col.on text { font-weight: 600; }
+.rp, .rl { stroke: var(--er-rel); stroke-width: 1; fill: none; }
+.rc { stroke: var(--er-rel); fill: var(--bg); }
+.hit { stroke: transparent; stroke-width: 16; fill: none; }
+.lb { fill: var(--bg); opacity: .9; }
+.lt { font-size: 11px; }
+.rel:hover .rp, .rel:hover .rl, .rel.sel .rp, .rel.sel .rl, .rel.sel .rc { stroke: var(--accent); stroke-width: 2.5; }
+.rel.sel .lt { font-weight: 700; fill: var(--accent); }
+#panel h2 { font-size: 22px; margin: 0 0 6px; }
+.say { background: var(--accent-soft); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 4px; margin: 10px 0 18px; font-size: 16px; }
+.say b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; margin-bottom: 2px; }
+.ref { margin: 0 0 26px; }
+.ref h3 { font-size: 16px; margin: 0 0 2px; }
+.ref .where { color: var(--muted); font-size: 13px; font-family: Consolas, "Cascadia Mono", monospace; }
+.ref .what { margin: 6px 0 8px; }
+.code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; }
+.code table { border-collapse: collapse; font: 13px/1.45 Consolas, "Cascadia Mono", "Courier New", monospace; min-width: 100%; }
+.code td { padding: 0 10px; white-space: pre; vertical-align: top; }
+.code td.n { color: var(--muted); text-align: right; user-select: none; border-right: 1px solid var(--line); width: 1%; }
+.code tr.hl td { background: var(--hl); }
+.code tr.mark td.n { color: var(--accent); font-weight: 700; }
+.t-kw { color: var(--c-kw); font-weight: 600; } .t-str { color: var(--c-str); } .t-com { color: var(--c-com); font-style: italic; }
+.t-par { color: var(--c-par); font-weight: 600; } .t-num { color: var(--c-num); }
+ul.pts { list-style: none; margin: 8px 0 0; padding: 0; }
+ul.pts li { display: flex; gap: 10px; padding: 5px 8px; border-radius: 4px; cursor: pointer; }
+ul.pts li:hover, ul.pts li.on { background: var(--hl); }
+ul.pts .ln-no { font-family: Consolas, monospace; color: var(--accent); font-weight: 700; min-width: 64px; }
+.empty { color: var(--muted); font-size: 17px; margin-top: 40px; }
+.nav { display: flex; gap: 8px; align-items: center; }
+.pos { color: var(--muted); font-size: 13px; min-width: 60px; text-align: center; }
+@media (max-width: 900px) {
+  main { grid-template-columns: 1fr; height: auto; }
+  #chart { border-right: 0; border-bottom: 1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Holiday Maker – databas och SQL</h1>
+  <span class="hint">Klicka på en tabell, en kolumn eller en relation för att se SQL-koden bakom. Pilarna ← → bläddrar.</span>
+  <div class="nav">
+    <button id="prev" type="button">← Föregående</button>
+    <span class="pos" id="pos"></span>
+    <button id="next" type="button">Nästa →</button>
+    <button id="theme" type="button">Ljust/mörkt</button>
+  </div>
+</header>
+<main>
+  <section id="chart" aria-label="E/R-diagram">
+    <svg viewBox="0 0 949 974" role="group" aria-label="E/R-diagram över databasen holiday_maker">
+<g class="node rel" data-id="rel-acc-room" tabindex="0" role="button" aria-label="Relationen accommodation till room">
+  <path class="hit" d="M281.0 317 V400"/>
+  <path class="rp" d="M281.0 317 V400"/>
+  <line class="rl" x1="275.0" y1="324.0" x2="287.0" y2="324.0"/>
+  <line class="rl" x1="275.0" y1="330.0" x2="287.0" y2="330.0"/>
+  <circle class="rc" cx="281.0" cy="385.0" r="4"/>
+  <line class="rl" x1="281.0" y1="391.0" x2="275.0" y2="400.0"/>
+  <line class="rl" x1="281.0" y1="391.0" x2="281.0" y2="400.0"/>
+  <line class="rl" x1="281.0" y1="391.0" x2="287.0" y2="400.0"/>
+  <rect class="lb" x="267.1" y="350.5" width="27.8" height="16"/>
+  <text class="lt" x="281.0" y="362.5" text-anchor="middle">har</text>
+</g>
+<g class="node rel" data-id="rel-room-booking" tabindex="0" role="button" aria-label="Relationen room till booking">
+  <path class="hit" d="M281.0 598 V666 H440.5 V690"/>
+  <path class="rp" d="M281.0 598 V666 H440.5 V690"/>
+  <line class="rl" x1="275.0" y1="605.0" x2="287.0" y2="605.0"/>
+  <line class="rl" x1="275.0" y1="611.0" x2="287.0" y2="611.0"/>
+  <circle class="rc" cx="440.5" cy="675.0" r="4"/>
+  <line class="rl" x1="440.5" y1="681.0" x2="434.5" y2="690.0"/>
+  <line class="rl" x1="440.5" y1="681.0" x2="440.5" y2="690.0"/>
+  <line class="rl" x1="440.5" y1="681.0" x2="446.5" y2="690.0"/>
+  <rect class="lb" x="253.9" y="628.0" width="54.2" height="16"/>
+  <text class="lt" x="281.0" y="640.0" text-anchor="middle">bokas i</text>
+</g>
+<g class="node rel" data-id="rel-cust-booking" tabindex="0" role="button" aria-label="Relationen customer till booking">
+  <path class="hit" d="M734.0 598 V666 H573.5 V690"/>
+  <path class="rp" d="M734.0 598 V666 H573.5 V690"/>
+  <line class="rl" x1="728.0" y1="605.0" x2="740.0" y2="605.0"/>
+  <line class="rl" x1="728.0" y1="611.0" x2="740.0" y2="611.0"/>
+  <circle class="rc" cx="573.5" cy="675.0" r="4"/>
+  <line class="rl" x1="573.5" y1="681.0" x2="567.5" y2="690.0"/>
+  <line class="rl" x1="573.5" y1="681.0" x2="573.5" y2="690.0"/>
+  <line class="rl" x1="573.5" y1="681.0" x2="579.5" y2="690.0"/>
+  <rect class="lb" x="720.1" y="628.0" width="27.8" height="16"/>
+  <text class="lt" x="734.0" y="640.0" text-anchor="middle">gör</text>
+</g>
+<g class="ent" data-id="accommodation">
+  <g class="node head" data-id="accommodation" tabindex="0" role="button" aria-label="Tabellen accommodation">
+    <rect class="hd" x="20" y="20" width="522" height="33"/>
+    <text x="281.0" y="40.5" text-anchor="middle">accommodation</text>
+  </g>
+  <g class="node col odd" data-id="accommodation" data-line="36" tabindex="0" role="button" aria-label="accommodation.id">
+    <rect x="20" y="53" width="522" height="33"/>
+    <text x="30.0" y="73.5">int</text>
+    <line class="sep" x1="86.0" y1="53" x2="86.0" y2="86"/>
+    <text x="96.0" y="73.5">id</text>
+    <line class="sep" x1="218.0" y1="53" x2="218.0" y2="86"/>
+    <text x="228.0" y="73.5">PK</text>
+    <line class="sep" x1="251.0" y1="53" x2="251.0" y2="86"/>
+    <text x="261.0" y="73.5">INT UNSIGNED, AUTO_INCREMENT</text>
+  </g>
+  <g class="node col even" data-id="accommodation" data-line="37" tabindex="0" role="button" aria-label="accommodation.name">
+    <rect x="20" y="86" width="522" height="33"/>
+    <text x="30.0" y="106.5">varchar</text>
+    <line class="sep" x1="86.0" y1="86" x2="86.0" y2="119"/>
+    <text x="96.0" y="106.5">name</text>
+    <line class="sep" x1="218.0" y1="86" x2="218.0" y2="119"/>
+    <line class="sep" x1="251.0" y1="86" x2="251.0" y2="119"/>
+    <text x="261.0" y="106.5">VARCHAR(100), UNIQUE tillsammans med city</text>
+  </g>
+  <g class="node col odd" data-id="accommodation" data-line="38" tabindex="0" role="button" aria-label="accommodation.city">
+    <rect x="20" y="119" width="522" height="33"/>
+    <text x="30.0" y="139.5">varchar</text>
+    <line class="sep" x1="86.0" y1="119" x2="86.0" y2="152"/>
+    <text x="96.0" y="139.5">city</text>
+    <line class="sep" x1="218.0" y1="119" x2="218.0" y2="152"/>
+    <line class="sep" x1="251.0" y1="119" x2="251.0" y2="152"/>
+    <text x="261.0" y="139.5">VARCHAR(60), index</text>
+  </g>
+  <g class="node col even" data-id="accommodation" data-line="39" tabindex="0" role="button" aria-label="accommodation.has_pool">
+    <rect x="20" y="152" width="522" height="33"/>
+    <text x="30.0" y="172.5">boolean</text>
+    <line class="sep" x1="86.0" y1="152" x2="86.0" y2="185"/>
+    <text x="96.0" y="172.5">has_pool</text>
+    <line class="sep" x1="218.0" y1="152" x2="218.0" y2="185"/>
+    <line class="sep" x1="251.0" y1="152" x2="251.0" y2="185"/>
+    <text x="261.0" y="172.5">BOOLEAN</text>
+  </g>
+  <g class="node col odd" data-id="accommodation" data-line="40" tabindex="0" role="button" aria-label="accommodation.has_restaurant">
+    <rect x="20" y="185" width="522" height="33"/>
+    <text x="30.0" y="205.5">boolean</text>
+    <line class="sep" x1="86.0" y1="185" x2="86.0" y2="218"/>
+    <text x="96.0" y="205.5">has_restaurant</text>
+    <line class="sep" x1="218.0" y1="185" x2="218.0" y2="218"/>
+    <line class="sep" x1="251.0" y1="185" x2="251.0" y2="218"/>
+    <text x="261.0" y="205.5">BOOLEAN</text>
+  </g>
+  <g class="node col even" data-id="accommodation" data-line="41" tabindex="0" role="button" aria-label="accommodation.beach_distance_m">
+    <rect x="20" y="218" width="522" height="33"/>
+    <text x="30.0" y="238.5">int</text>
+    <line class="sep" x1="86.0" y1="218" x2="86.0" y2="251"/>
+    <text x="96.0" y="238.5">beach_distance_m</text>
+    <line class="sep" x1="218.0" y1="218" x2="218.0" y2="251"/>
+    <line class="sep" x1="251.0" y1="218" x2="251.0" y2="251"/>
+    <text x="261.0" y="238.5">INT UNSIGNED, meter</text>
+  </g>
+  <g class="node col odd" data-id="accommodation" data-line="42" tabindex="0" role="button" aria-label="accommodation.center_distance_m">
+    <rect x="20" y="251" width="522" height="33"/>
+    <text x="30.0" y="271.5">int</text>
+    <line class="sep" x1="86.0" y1="251" x2="86.0" y2="284"/>
+    <text x="96.0" y="271.5">center_distance_m</text>
+    <line class="sep" x1="218.0" y1="251" x2="218.0" y2="284"/>
+    <line class="sep" x1="251.0" y1="251" x2="251.0" y2="284"/>
+    <text x="261.0" y="271.5">INT UNSIGNED, meter</text>
+  </g>
+  <g class="node col even" data-id="accommodation" data-line="43" tabindex="0" role="button" aria-label="accommodation.rating">
+    <rect x="20" y="284" width="522" height="33"/>
+    <text x="30.0" y="304.5">tinyint</text>
+    <line class="sep" x1="86.0" y1="284" x2="86.0" y2="317"/>
+    <text x="96.0" y="304.5">rating</text>
+    <line class="sep" x1="218.0" y1="284" x2="218.0" y2="317"/>
+    <line class="sep" x1="251.0" y1="284" x2="251.0" y2="317"/>
+    <text x="261.0" y="304.5">TINYINT, CHECK 1-5</text>
+  </g>
+  <rect class="frame" x="20" y="20" width="522" height="297"/>
+</g>
+<g class="ent" data-id="room">
+  <g class="node head" data-id="room" tabindex="0" role="button" aria-label="Tabellen room">
+    <rect class="hd" x="53" y="400" width="456" height="33"/>
+    <text x="281.0" y="420.5" text-anchor="middle">room</text>
+  </g>
+  <g class="node col odd" data-id="room" data-line="57" tabindex="0" role="button" aria-label="room.id">
+    <rect x="53" y="433" width="456" height="33"/>
+    <text x="63.0" y="453.5">int</text>
+    <line class="sep" x1="119.0" y1="433" x2="119.0" y2="466"/>
+    <text x="129.0" y="453.5">id</text>
+    <line class="sep" x1="245.0" y1="433" x2="245.0" y2="466"/>
+    <text x="255.0" y="453.5">PK</text>
+    <line class="sep" x1="278.0" y1="433" x2="278.0" y2="466"/>
+    <text x="288.0" y="453.5">INT UNSIGNED, AUTO_INCREMENT</text>
+  </g>
+  <g class="node col even" data-id="room" data-line="58" tabindex="0" role="button" aria-label="room.accommodation_id">
+    <rect x="53" y="466" width="456" height="33"/>
+    <text x="63.0" y="486.5">int</text>
+    <line class="sep" x1="119.0" y1="466" x2="119.0" y2="499"/>
+    <text x="129.0" y="486.5">accommodation_id</text>
+    <line class="sep" x1="245.0" y1="466" x2="245.0" y2="499"/>
+    <text x="255.0" y="486.5">FK</text>
+    <line class="sep" x1="278.0" y1="466" x2="278.0" y2="499"/>
+    <text x="288.0" y="486.5">INT UNSIGNED, ON DELETE CASCADE</text>
+  </g>
+  <g class="node col odd" data-id="room" data-line="59" tabindex="0" role="button" aria-label="room.room_number">
+    <rect x="53" y="499" width="456" height="33"/>
+    <text x="63.0" y="519.5">varchar</text>
+    <line class="sep" x1="119.0" y1="499" x2="119.0" y2="532"/>
+    <text x="129.0" y="519.5">room_number</text>
+    <line class="sep" x1="245.0" y1="499" x2="245.0" y2="532"/>
+    <line class="sep" x1="278.0" y1="499" x2="278.0" y2="532"/>
+    <text x="288.0" y="519.5">VARCHAR(10), UNIQUE inom boendet</text>
+  </g>
+  <g class="node col even" data-id="room" data-line="60" tabindex="0" role="button" aria-label="room.capacity">
+    <rect x="53" y="532" width="456" height="33"/>
+    <text x="63.0" y="552.5">tinyint</text>
+    <line class="sep" x1="119.0" y1="532" x2="119.0" y2="565"/>
+    <text x="129.0" y="552.5">capacity</text>
+    <line class="sep" x1="245.0" y1="532" x2="245.0" y2="565"/>
+    <line class="sep" x1="278.0" y1="532" x2="278.0" y2="565"/>
+    <text x="288.0" y="552.5">TINYINT, CHECK minst 1</text>
+  </g>
+  <g class="node col odd" data-id="room" data-line="61" tabindex="0" role="button" aria-label="room.price_per_night">
+    <rect x="53" y="565" width="456" height="33"/>
+    <text x="63.0" y="585.5">decimal</text>
+    <line class="sep" x1="119.0" y1="565" x2="119.0" y2="598"/>
+    <text x="129.0" y="585.5">price_per_night</text>
+    <line class="sep" x1="245.0" y1="565" x2="245.0" y2="598"/>
+    <line class="sep" x1="278.0" y1="565" x2="278.0" y2="598"/>
+    <text x="288.0" y="585.5">DECIMAL(8,2), CHECK över 0</text>
+  </g>
+  <rect class="frame" x="53" y="400" width="456" height="198"/>
+</g>
+<g class="ent" data-id="customer">
+  <g class="node head" data-id="customer" tabindex="0" role="button" aria-label="Tabellen customer">
+    <rect class="hd" x="539" y="400" width="390" height="33"/>
+    <text x="734.0" y="420.5" text-anchor="middle">customer</text>
+  </g>
+  <g class="node col odd" data-id="customer" data-line="75" tabindex="0" role="button" aria-label="customer.id">
+    <rect x="539" y="433" width="390" height="33"/>
+    <text x="549.0" y="453.5">int</text>
+    <line class="sep" x1="605.0" y1="433" x2="605.0" y2="466"/>
+    <text x="615.0" y="453.5">id</text>
+    <line class="sep" x1="691.0" y1="433" x2="691.0" y2="466"/>
+    <text x="701.0" y="453.5">PK</text>
+    <line class="sep" x1="724.0" y1="433" x2="724.0" y2="466"/>
+    <text x="734.0" y="453.5">INT UNSIGNED, AUTO_INCREMENT</text>
+  </g>
+  <g class="node col even" data-id="customer" data-line="76" tabindex="0" role="button" aria-label="customer.first_name">
+    <rect x="539" y="466" width="390" height="33"/>
+    <text x="549.0" y="486.5">varchar</text>
+    <line class="sep" x1="605.0" y1="466" x2="605.0" y2="499"/>
+    <text x="615.0" y="486.5">first_name</text>
+    <line class="sep" x1="691.0" y1="466" x2="691.0" y2="499"/>
+    <line class="sep" x1="724.0" y1="466" x2="724.0" y2="499"/>
+    <text x="734.0" y="486.5">VARCHAR(60)</text>
+  </g>
+  <g class="node col odd" data-id="customer" data-line="77" tabindex="0" role="button" aria-label="customer.last_name">
+    <rect x="539" y="499" width="390" height="33"/>
+    <text x="549.0" y="519.5">varchar</text>
+    <line class="sep" x1="605.0" y1="499" x2="605.0" y2="532"/>
+    <text x="615.0" y="519.5">last_name</text>
+    <line class="sep" x1="691.0" y1="499" x2="691.0" y2="532"/>
+    <line class="sep" x1="724.0" y1="499" x2="724.0" y2="532"/>
+    <text x="734.0" y="519.5">VARCHAR(60)</text>
+  </g>
+  <g class="node col even" data-id="customer" data-line="78" tabindex="0" role="button" aria-label="customer.email">
+    <rect x="539" y="532" width="390" height="33"/>
+    <text x="549.0" y="552.5">varchar</text>
+    <line class="sep" x1="605.0" y1="532" x2="605.0" y2="565"/>
+    <text x="615.0" y="552.5">email</text>
+    <line class="sep" x1="691.0" y1="532" x2="691.0" y2="565"/>
+    <text x="701.0" y="552.5">UK</text>
+    <line class="sep" x1="724.0" y1="532" x2="724.0" y2="565"/>
+    <text x="734.0" y="552.5">VARCHAR(120)</text>
+  </g>
+  <g class="node col odd" data-id="customer" data-line="79" tabindex="0" role="button" aria-label="customer.phone">
+    <rect x="539" y="565" width="390" height="33"/>
+    <text x="549.0" y="585.5">varchar</text>
+    <line class="sep" x1="605.0" y1="565" x2="605.0" y2="598"/>
+    <text x="615.0" y="585.5">phone</text>
+    <line class="sep" x1="691.0" y1="565" x2="691.0" y2="598"/>
+    <line class="sep" x1="724.0" y1="565" x2="724.0" y2="598"/>
+    <text x="734.0" y="585.5">VARCHAR(30)</text>
+  </g>
+  <rect class="frame" x="539" y="400" width="390" height="198"/>
+</g>
+<g class="ent" data-id="booking">
+  <g class="node head" data-id="booking" tabindex="0" role="button" aria-label="Tabellen booking">
+    <rect class="hd" x="292.5" y="690" width="430" height="33"/>
+    <text x="507.5" y="710.5" text-anchor="middle">booking</text>
+  </g>
+  <g class="node col odd" data-id="booking" data-line="97" tabindex="0" role="button" aria-label="booking.id">
+    <rect x="292.5" y="723" width="430" height="33"/>
+    <text x="302.5" y="743.5">int</text>
+    <line class="sep" x1="365.5" y1="723" x2="365.5" y2="756"/>
+    <text x="375.5" y="743.5">id</text>
+    <line class="sep" x1="458.5" y1="723" x2="458.5" y2="756"/>
+    <text x="468.5" y="743.5">PK</text>
+    <line class="sep" x1="491.5" y1="723" x2="491.5" y2="756"/>
+    <text x="501.5" y="743.5">INT UNSIGNED, bokningsnummer</text>
+  </g>
+  <g class="node col even" data-id="booking" data-line="98" tabindex="0" role="button" aria-label="booking.room_id">
+    <rect x="292.5" y="756" width="430" height="33"/>
+    <text x="302.5" y="776.5">int</text>
+    <line class="sep" x1="365.5" y1="756" x2="365.5" y2="789"/>
+    <text x="375.5" y="776.5">room_id</text>
+    <line class="sep" x1="458.5" y1="756" x2="458.5" y2="789"/>
+    <text x="468.5" y="776.5">FK</text>
+    <line class="sep" x1="491.5" y1="756" x2="491.5" y2="789"/>
+    <text x="501.5" y="776.5">INT UNSIGNED, ON DELETE RESTRICT</text>
+  </g>
+  <g class="node col odd" data-id="booking" data-line="99" tabindex="0" role="button" aria-label="booking.customer_id">
+    <rect x="292.5" y="789" width="430" height="33"/>
+    <text x="302.5" y="809.5">int</text>
+    <line class="sep" x1="365.5" y1="789" x2="365.5" y2="822"/>
+    <text x="375.5" y="809.5">customer_id</text>
+    <line class="sep" x1="458.5" y1="789" x2="458.5" y2="822"/>
+    <text x="468.5" y="809.5">FK</text>
+    <line class="sep" x1="491.5" y1="789" x2="491.5" y2="822"/>
+    <text x="501.5" y="809.5">INT UNSIGNED, ON DELETE CASCADE</text>
+  </g>
+  <g class="node col even" data-id="booking" data-line="100" tabindex="0" role="button" aria-label="booking.check_in">
+    <rect x="292.5" y="822" width="430" height="33"/>
+    <text x="302.5" y="842.5">date</text>
+    <line class="sep" x1="365.5" y1="822" x2="365.5" y2="855"/>
+    <text x="375.5" y="842.5">check_in</text>
+    <line class="sep" x1="458.5" y1="822" x2="458.5" y2="855"/>
+    <line class="sep" x1="491.5" y1="822" x2="491.5" y2="855"/>
+    <text x="501.5" y="842.5">DATE</text>
+  </g>
+  <g class="node col odd" data-id="booking" data-line="101" tabindex="0" role="button" aria-label="booking.check_out">
+    <rect x="292.5" y="855" width="430" height="33"/>
+    <text x="302.5" y="875.5">date</text>
+    <line class="sep" x1="365.5" y1="855" x2="365.5" y2="888"/>
+    <text x="375.5" y="875.5">check_out</text>
+    <line class="sep" x1="458.5" y1="855" x2="458.5" y2="888"/>
+    <line class="sep" x1="491.5" y1="855" x2="491.5" y2="888"/>
+    <text x="501.5" y="875.5">DATE, CHECK efter check_in</text>
+  </g>
+  <g class="node col even" data-id="booking" data-line="102" tabindex="0" role="button" aria-label="booking.guests">
+    <rect x="292.5" y="888" width="430" height="33"/>
+    <text x="302.5" y="908.5">tinyint</text>
+    <line class="sep" x1="365.5" y1="888" x2="365.5" y2="921"/>
+    <text x="375.5" y="908.5">guests</text>
+    <line class="sep" x1="458.5" y1="888" x2="458.5" y2="921"/>
+    <line class="sep" x1="491.5" y1="888" x2="491.5" y2="921"/>
+    <text x="501.5" y="908.5">TINYINT, CHECK minst 1</text>
+  </g>
+  <g class="node col odd" data-id="booking" data-line="103" tabindex="0" role="button" aria-label="booking.created_at">
+    <rect x="292.5" y="921" width="430" height="33"/>
+    <text x="302.5" y="941.5">datetime</text>
+    <line class="sep" x1="365.5" y1="921" x2="365.5" y2="954"/>
+    <text x="375.5" y="941.5">created_at</text>
+    <line class="sep" x1="458.5" y1="921" x2="458.5" y2="954"/>
+    <line class="sep" x1="491.5" y1="921" x2="491.5" y2="954"/>
+    <text x="501.5" y="941.5">DATETIME, sätts automatiskt</text>
+  </g>
+  <rect class="frame" x="292.5" y="690" width="430" height="264"/>
+</g>
+    </svg>
+    <h2>Mer i SQL-filerna</h2>
+    <div class="morelist">
+    <button type="button" class="more" data-id="db">Skapa databasen</button>
+    <button type="button" class="more" data-id="trg-capacity">Trigger: ryms gästerna?</button>
+    <button type="button" class="more" data-id="trg-overlap">Trigger: krockar perioden?</button>
+    <button type="button" class="more" data-id="search">Sökningen: lediga rum</button>
+    <button type="button" class="more" data-id="total">Totalpriset räknas ut</button>
+    <button type="button" class="more" data-id="conflict">Krockkontroll vid sparande</button>
+    <button type="button" class="more" data-id="user">Användaren holiday_app</button>
+    <button type="button" class="more" data-id="testdata">Testdata</button>
+    <button type="button" class="more" data-id="checks">Kontroller av hela databasen</button>
+    </div>
+  </section>
+  <section id="panel" aria-live="polite">
+    <p class="empty">Klicka på en tabell, kolumn eller relation i E/R-diagrammet till vänster.<br>Då visas SQL-koden som skapar den, med en enkel förklaring.</p>
+  </section>
+</main>
+<script id="data" type="application/json">{"nodes":{"accommodation":{"name":"Tabellen accommodation","refs":[{"code":"CREATE TABLE accommodation (\n    id                INT UNSIGNED     NOT NULL AUTO_INCREMENT,\n    name              VARCHAR(100)     NOT NULL,\n    city              VARCHAR(60)      NOT NULL,\n    has_pool          BOOLEAN          NOT NULL DEFAULT FALSE,\n    has_restaurant    BOOLEAN          NOT NULL DEFAULT FALSE,\n    beach_distance_m  INT UNSIGNED     NOT NULL,\n    center_distance_m INT UNSIGNED     NOT NULL,\n    rating            TINYINT UNSIGNED NOT NULL,\n    PRIMARY KEY (id),\n    INDEX ix_accommodation_city (city),\n    CONSTRAINT uq_accommodation_name_city UNIQUE (name, city),\n    CONSTRAINT chk_accommodation_rating   CHECK (rating BETWEEN 1 AND 5)\n) ENGINE = InnoDB;","file":"sql/01_create_database.sql","from":35,"points":[{"line":36,"text":"Primärnyckel. Ett nummer som databasen själv delar ut (AUTO_INCREMENT) och som pekar ut exakt ett boende."},{"line":37,"text":"Boendets namn, högst 100 tecken."},{"line":38,"text":"Orten. Det är den man söker på, därför har den ett index."},{"line":39,"text":"Har boendet pool? Sant eller falskt. Är inget angivet blir det falskt."},{"line":40,"text":"Har boendet restaurang? Sant eller falskt."},{"line":41,"text":"Avstånd till stranden i meter. UNSIGNED betyder att talet inte kan vara negativt."},{"line":42,"text":"Avstånd till centrum i meter."},{"line":43,"text":"Omdöme. TINYINT är ett litet heltal. CHECK längre ner kräver 1–5."},{"line":44,"text":"Gör id till primärnyckel: unikt och aldrig tomt."},{"line":45,"text":"Index på orten. Sökningen börjar alltid med orten, och indexet gör den snabb."},{"line":46,"text":"Samma namn får inte finnas två gånger på samma ort."},{"line":47,"text":"Omdömet måste vara 1–5. Annars vägrar databasen spara raden."}],"title":"CREATE TABLE accommodation","to":48,"what":"Så skapas tabellen. Varje rad är en kolumn eller en regel. Klicka på en rad i listan under koden."},{"code":"INSERT INTO accommodation\n    (id, name, city, has_pool, has_restaurant, beach_distance_m, center_distance_m, rating)\nVALUES\n    (1, 'Hotell Strandkanten',      'Malmö',     TRUE,  TRUE,   150,  900, 5),\n    (2, 'Pensionat Solgården',      'Malmö',     FALSE, TRUE,  1200,  300, 4),\n    (3, 'Hotell Hamnkrogen',        'Göteborg',  TRUE,  TRUE,  2500,  150, 4),\n    (4, 'Vandrarhem Lilla Bommen',  'Göteborg',  FALSE, FALSE, 3000,  700, 2),\n    (5, 'Visby Strandhotell',       'Visby',     TRUE,  TRUE,    80, 1100, 5),\n    (6, 'Pensionat Ringmuren',      'Visby',     FALSE, FALSE, 1800,  200, 3);","file":"sql/02_testdata.sql","from":38,"points":[],"title":"Testdata i tabellen","to":46,"what":"Sex boenden på tre orter. Pool, restaurang, avstånd och omdöme varierar så att varje filter ger olika svar."}],"say":"Ett boende, till exempel ett hotell. Pool, restaurang, avstånd och omdöme hör till hela boendet, inte till varje rum – annars skulle samma värden stå på varje rum."},"booking":{"name":"Tabellen booking","refs":[{"code":"CREATE TABLE booking (\n    id          INT UNSIGNED     NOT NULL AUTO_INCREMENT,\n    room_id     INT UNSIGNED     NOT NULL,\n    customer_id INT UNSIGNED     NOT NULL,\n    check_in    DATE             NOT NULL,\n    check_out   DATE             NOT NULL,\n    guests      TINYINT UNSIGNED NOT NULL,\n    created_at  DATETIME         NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (id),\n    INDEX ix_booking_room_dates (room_id, check_in, check_out),\n    CONSTRAINT fk_booking_room     FOREIGN KEY (room_id)\n        REFERENCES room (id) ON DELETE RESTRICT,\n    CONSTRAINT fk_booking_customer FOREIGN KEY (customer_id)\n        REFERENCES customer (id) ON DELETE CASCADE,\n    CONSTRAINT chk_booking_dates   CHECK (check_out > check_in),\n    CONSTRAINT chk_booking_guests  CHECK (guests >= 1)\n) ENGINE = InnoDB;","file":"sql/01_create_database.sql","from":96,"points":[{"line":97,"text":"Primärnyckel. Det är bokningsnumret kunden får."},{"line":98,"text":"Främmande nyckel: vilket rum som är bokat. Pekar på room.id."},{"line":99,"text":"Främmande nyckel: vem som har bokat. Pekar på customer.id."},{"line":100,"text":"Incheckningsdag."},{"line":101,"text":"Utcheckningsdag. Måste vara efter incheckningen (CHECK längre ner)."},{"line":102,"text":"Antal personer. Minst 1, och får inte vara fler än rummet rymmer (det kontrollerar triggern)."},{"line":103,"text":"När bokningen gjordes. Databasen fyller i det själv (DEFAULT CURRENT_TIMESTAMP)."},{"line":104,"text":"Gör id till primärnyckel."},{"line":105,"text":"Index på rum och datum. Det är det som sökningen efter lediga rum använder."},{"line":106,"text":"Kopplingen till rummet. RESTRICT: ett rum som har bokningar kan inte tas bort."},{"line":108,"text":"Kopplingen till kunden. CASCADE: tas kunden bort försvinner kundens bokningar."},{"line":110,"text":"Utcheckningen måste vara efter incheckningen."},{"line":111,"text":"Minst en person per bokning."}],"title":"CREATE TABLE booking","to":112,"what":"Så skapas tabellen. Varje rad är en kolumn eller en regel. Klicka på en rad i listan under koden."},{"code":"INSERT INTO booking (id, room_id, customer_id, check_in, check_out, guests) VALUES\n    ( 1,  1, 1, '2026-12-01', '2026-12-05', 2),\n    ( 2,  1, 2, '2026-12-05', '2026-12-10', 2),\n    ( 3,  1, 3, '2026-12-18', '2026-12-22', 1),\n    ( 4,  2, 4, '2026-12-10', '2026-12-13', 2),\n    ( 5,  3, 5, '2026-12-03', '2026-12-08', 4),\n    ( 6,  3, 1, '2026-12-20', '2026-12-27', 3),\n    ( 7,  4, 2, '2026-12-11', '2026-12-14', 1),\n    ( 8,  5, 3, '2026-12-02', '2026-12-04', 1),\n    ( 9,  6, 4, '2026-12-09', '2026-12-16', 2),\n    (10,  7, 5, '2026-12-21', '2026-12-28', 4),\n    (11,  8, 1, '2026-12-05', '2026-12-09', 2),\n    (12,  8, 2, '2026-12-09', '2026-12-12', 2),\n    (13,  9, 3, '2026-12-24', '2026-12-31', 2),\n    (14, 10, 4, '2026-12-01', '2026-12-06', 4),\n    (15, 10, 5, '2026-12-15', '2026-12-19', 3),\n    (16, 11, 1, '2026-12-23', '2026-12-30', 6),\n    (17, 12, 2, '2026-12-07', '2026-12-09', 1),\n    (18, 13, 3, '2026-12-12', '2026-12-15', 2),\n    (19, 14, 4, '2026-12-18', '2026-12-26', 4),\n    (20, 16, 5, '2026-12-02', '2026-12-09', 2),\n    (21, 16, 1, '2026-12-27', '2026-12-31', 2),\n    (22, 17, 2, '2026-12-10', '2026-12-17', 4),\n    (23, 19, 3, '2026-12-04', '2026-12-07', 2),\n    (24, 21, 4, '2026-12-13', '2026-12-20', 4),\n    (25, 22, 5, '2026-12-29', '2026-12-31', 1);","file":"sql/02_testdata.sql","from":85,"points":[],"title":"Testdata i tabellen","to":110,"what":"25 bokningar i december 2026. Rad 87 börjar samma dag som rad 86 slutar: utcheckningsdagen är ledig."}],"say":"En bokning binder ihop en kund med ett rum under en period. Totalpriset sparas inte – det räknas ut från datumen och rummets pris när det visas."},"checks":{"name":"Två kontroller av hela databasen","refs":[{"code":"SELECT COUNT(*) AS bokningar_som_krockar\n  FROM booking x\n  JOIN booking y\n    ON x.room_id   = y.room_id\n   AND x.id        < y.id\n   AND x.check_in  < y.check_out\n   AND x.check_out > y.check_in;\n\nSELECT COUNT(*) AS bokningar_med_for_manga_gaster\n  FROM booking b\n  JOIN room r ON r.id = b.room_id\n WHERE b.guests > r.capacity;","file":"sql/03_testfragor.sql","from":280,"points":[{"line":282,"text":"Tabellen kopplas ihop med sig själv: varje bokning mot varje annan."},{"line":284,"text":"Varje par räknas bara en gång."},{"line":291,"text":"Fler gäster än rummet rymmer."}],"title":"Krockar och överfulla rum","to":291,"what":"Den första jämför varje bokning med alla andra. Den andra jämför gäster med rummets storlek."}],"say":"Två frågor som letar efter fel i allt som finns sparat. Båda ska svara 0."},"conflict":{"name":"Kontrollen när en bokning sparas","refs":[{"code":"SELECT COUNT(*) AS krockar\n  FROM booking\n WHERE room_id   = @roomId\n   AND check_in  < @checkOut\n   AND check_out > @checkIn;","file":"sql/03_testfragor.sql","from":261,"points":[{"line":263,"text":"Det rum som ska bokas."},{"line":264,"text":"Samma överlappsvillkor som i triggern."}],"title":"Antal krockande bokningar för ett rum","to":265,"what":"Samma villkor som i sökningen, mot ett enda rum."}],"say":"Programmet kontrollerar en gång till precis innan bokningen sparas, ifall någon annan hunnit boka rummet. Svaret är antal krockar: 0 betyder fritt."},"customer":{"name":"Tabellen customer","refs":[{"code":"CREATE TABLE customer (\n    id         INT UNSIGNED NOT NULL AUTO_INCREMENT,\n    first_name VARCHAR(60)  NOT NULL,\n    last_name  VARCHAR(60)  NOT NULL,\n    email      VARCHAR(120) NOT NULL,\n    phone      VARCHAR(30)  NOT NULL,\n    PRIMARY KEY (id),\n    CONSTRAINT uq_customer_email UNIQUE (email)\n) ENGINE = InnoDB;","file":"sql/01_create_database.sql","from":74,"points":[{"line":75,"text":"Primärnyckel. Kundens nummer."},{"line":76,"text":"Förnamn, högst 60 tecken."},{"line":77,"text":"Efternamn, högst 60 tecken."},{"line":78,"text":"E-postadress. Den är unik (UK), så samma kund kan inte läggas in två gånger."},{"line":79,"text":"Telefonnummer, sparat som text så att mellanslag och bindestreck finns kvar."},{"line":80,"text":"Gör id till primärnyckel."},{"line":81,"text":"Samma e-postadress kan inte finnas två gånger."}],"title":"CREATE TABLE customer","to":82,"what":"Så skapas tabellen. Varje rad är en kolumn eller en regel. Klicka på en rad i listan under koden."},{"code":"INSERT INTO customer (id, first_name, last_name, email, phone) VALUES\n    (1, 'Anna',   'Lindqvist', 'anna.lindqvist@example.com', '070-111 22 33'),\n    (2, 'Björn',  'Ek',        'bjorn.ek@example.com',       '070-222 33 44'),\n    (3, 'Carina', 'Nyberg',    'carina.nyberg@example.com',  '070-333 44 55'),\n    (4, 'David',  'Olsson',    'david.olsson@example.com',   '070-444 55 66'),\n    (5, 'Elin',   'Sandberg',  'elin.sandberg@example.com',  '070-555 66 77');","file":"sql/02_testdata.sql","from":74,"points":[],"title":"Testdata i tabellen","to":79,"what":"Fem kunder med påhittade uppgifter."}],"say":"En kund som kan boka. E-postadressen är unik, så samma person kan inte registreras två gånger av misstag."},"db":{"name":"Databasen holiday_maker skapas","refs":[{"code":"SET NAMES utf8mb4;\n\nDROP DATABASE IF EXISTS holiday_maker;\nCREATE DATABASE holiday_maker\n    CHARACTER SET utf8mb4\n    COLLATE utf8mb4_swedish_ci;\nUSE holiday_maker;","file":"sql/01_create_database.sql","from":18,"points":[{"line":18,"text":"Gör att å, ä och ö kommer in rätt."},{"line":20,"text":"Tar bort en gammal version om den finns."},{"line":22,"text":"Teckenuppsättning som klarar alla tecken."},{"line":23,"text":"Svensk sortering: å, ä och ö kommer sist i alfabetet."},{"line":24,"text":"Allt som följer hamnar i den nya databasen."}],"title":"Början av 01_create_database.sql","to":24,"what":"De första raderna i skriptet."}],"say":"Först tas en gammal databas med samma namn bort, så att skriptet alltid kan köras om från början. Sedan skapas en ny med svensk sorteringsordning."},"rel-acc-room":{"name":"Relationen accommodation – room (\"har\")","refs":[{"code":"CONSTRAINT fk_room_accommodation FOREIGN KEY (accommodation_id)\n    REFERENCES accommodation (id) ON DELETE CASCADE,","file":"sql/01_create_database.sql","from":64,"points":[{"line":64,"text":"Databasen godtar bara ett boende som finns."},{"line":65,"text":"Tas boendet bort följer dess rum med."}],"title":"Främmande nyckeln i room","to":65,"what":"Kolumnen accommodation_id i room pekar på id i accommodation."},{"code":"FROM  room r\nJOIN  accommodation a ON a.id = r.accommodation_id","file":"sql/03_testfragor.sql","from":48,"points":[{"line":49,"text":"Här möts de två tabellerna: rummets accommodation_id = boendets id."}],"title":"Så används relationen i sökningen","to":49,"what":"JOIN hämtar boendet som rummet hör till, så att ort, pool och omdöme kan visas."}],"say":"Ett boende har ett eller flera rum, och varje rum hör till exakt ett boende. I diagrammet: || vid boendet betyder \"exakt ett\", o{ vid rummet betyder \"noll eller många\"."},"rel-cust-booking":{"name":"Relationen customer – booking (\"gör\")","refs":[{"code":"CONSTRAINT fk_booking_customer FOREIGN KEY (customer_id)\n    REFERENCES customer (id) ON DELETE CASCADE,","file":"sql/01_create_database.sql","from":108,"points":[{"line":108,"text":"En bokning måste höra till en kund som finns."},{"line":109,"text":"Tas kunden bort försvinner kundens bokningar, och rummen blir lediga."}],"title":"Främmande nyckeln customer_id i booking","to":109,"what":"Kolumnen customer_id i booking pekar på id i customer."},{"code":"WHERE  b.customer_id = @customerId\nORDER BY b.check_in, b.id;","file":"sql/03_testfragor.sql","from":248,"points":[{"line":248,"text":"Bara den valda kundens bokningar."}],"title":"Så används relationen","to":249,"what":"Alla bokningar för en kund hämtas genom att filtrera på customer_id."}],"say":"En kund kan göra många bokningar, men varje bokning tillhör exakt en kund."},"rel-room-booking":{"name":"Relationen room – booking (\"bokas i\")","refs":[{"code":"CONSTRAINT fk_booking_room     FOREIGN KEY (room_id)\n    REFERENCES room (id) ON DELETE RESTRICT,","file":"sql/01_create_database.sql","from":106,"points":[{"line":106,"text":"En bokning måste gälla ett rum som finns."},{"line":107,"text":"Ett rum som har bokningar kan inte tas bort."}],"title":"Främmande nyckeln room_id i booking","to":107,"what":"Kolumnen room_id i booking pekar på id i room."},{"code":"FROM  booking b\nJOIN  room r          ON r.id = b.room_id\nJOIN  accommodation a ON a.id = r.accommodation_id","file":"sql/03_testfragor.sql","from":245,"points":[{"line":246,"text":"Bokningens room_id = rummets id."}],"title":"Så används relationen i kundens bokningar","to":247,"what":"Från bokningen hämtas rummet, och från rummet boendet."}],"say":"Ett rum kan bokas många gånger (vid olika datum), men varje bokning gäller exakt ett rum."},"room":{"name":"Tabellen room","refs":[{"code":"CREATE TABLE room (\n    id               INT UNSIGNED     NOT NULL AUTO_INCREMENT,\n    accommodation_id INT UNSIGNED     NOT NULL,\n    room_number      VARCHAR(10)      NOT NULL,\n    capacity         TINYINT UNSIGNED NOT NULL,\n    price_per_night  DECIMAL(8,2)     NOT NULL,\n    PRIMARY KEY (id),\n    CONSTRAINT uq_room_number        UNIQUE (accommodation_id, room_number),\n    CONSTRAINT fk_room_accommodation FOREIGN KEY (accommodation_id)\n        REFERENCES accommodation (id) ON DELETE CASCADE,\n    CONSTRAINT chk_room_capacity     CHECK (capacity >= 1),\n    CONSTRAINT chk_room_price        CHECK (price_per_night > 0)\n) ENGINE = InnoDB;","file":"sql/01_create_database.sql","from":56,"points":[{"line":57,"text":"Primärnyckel. Rummets eget nummer i databasen."},{"line":58,"text":"Främmande nyckel: vilket boende rummet hör till. Pekar på accommodation.id."},{"line":59,"text":"Rumsnumret som gästen ser, till exempel 101. Unikt inom boendet."},{"line":60,"text":"Hur många personer rummet rymmer. Minst 1."},{"line":61,"text":"Pris per natt. DECIMAL(8,2) sparar exakta belopp med två decimaler, utan avrundningsfel."},{"line":62,"text":"Gör id till primärnyckel."},{"line":63,"text":"Rumsnumret är unikt inom boendet, men samma nummer får finnas på ett annat boende."},{"line":64,"text":"Kopplingen till boendet: databasen godtar bara ett accommodation_id som finns."},{"line":65,"text":"Tas boendet bort följer rummen med."},{"line":66,"text":"Ett rum måste rymma minst en person."},{"line":67,"text":"Priset måste vara större än noll."}],"title":"CREATE TABLE room","to":68,"what":"Så skapas tabellen. Varje rad är en kolumn eller en regel. Klicka på en rad i listan under koden."},{"code":"INSERT INTO room (id, accommodation_id, room_number, capacity, price_per_night) VALUES\n    ( 1, 1, '101', 2, 1450.00),\n    ( 2, 1, '102', 2, 1450.00),\n    ( 3, 1, '103', 4, 2200.00),\n    ( 4, 1, '104', 1,  950.00),\n    ( 5, 2, '201', 1,  700.00),\n    ( 6, 2, '202', 2, 1050.00),\n    ( 7, 2, '203', 4, 1600.00),\n    ( 8, 3, '301', 2, 1250.00),\n    ( 9, 3, '302', 2, 1250.00),\n    (10, 3, '303', 4, 1950.00),\n    (11, 3, '304', 6, 2600.00),\n    (12, 4, '401', 1,  450.00),\n    (13, 4, '402', 2,  650.00),\n    (14, 4, '403', 4,  900.00),\n    (15, 4, '404', 4,  900.00),\n    (16, 5, '501', 2, 1800.00),\n    (17, 5, '502', 4, 2500.00),\n    (18, 5, '503', 1, 1200.00),\n    (19, 6, '601', 2,  890.00),\n    (20, 6, '602', 2,  890.00),\n    (21, 6, '603', 4, 1300.00),\n    (22, 6, '604', 1,  620.00);","file":"sql/02_testdata.sql","from":49,"points":[],"title":"Testdata i tabellen","to":71,"what":"22 rum med fyra olika storlekar: 1, 2, 4 och 6 personer. Andra talet på varje rad är boendets id."}],"say":"Ett rum på ett boende. Hur många det rymmer och vad en natt kostar hör till rummet."},"search":{"name":"Sökningen efter lediga rum","refs":[{"code":"SELECT  r.id,\n        a.name AS accommodation_name,\n        a.city,\n        r.room_number,\n        r.capacity,\n        r.price_per_night,\n        a.rating,\n        a.has_pool,\n        a.has_restaurant,\n        a.beach_distance_m,\n        a.center_distance_m\n  FROM  room r\n  JOIN  accommodation a ON a.id = r.accommodation_id\n WHERE  a.city = @city\n   AND  r.capacity >= @guests\n   AND (@requirePool       = 0 OR a.has_pool       = 1)\n   AND (@requireRestaurant = 0 OR a.has_restaurant = 1)\n   AND (@maxBeach  IS NULL OR a.beach_distance_m  <= @maxBeach)\n   AND (@maxCenter IS NULL OR a.center_distance_m <= @maxCenter)\n   AND  NOT EXISTS (\n            SELECT 1\n              FROM booking b\n             WHERE b.room_id   = r.id\n               AND b.check_in  < @checkOut\n               AND b.check_out > @checkIn)\n ORDER BY\n        CASE WHEN @sortByPrice = 1 THEN r.price_per_night END ASC,\n        CASE WHEN @sortByPrice = 0 THEN a.rating          END DESC,\n        r.price_per_night ASC,\n        a.name ASC,\n        r.room_number ASC;","file":"sql/03_testfragor.sql","from":37,"points":[{"line":49,"text":"Rummet kopplas ihop med sitt boende."},{"line":50,"text":"Bara den valda orten."},{"line":51,"text":"Rummet måste rymma alla."},{"line":52,"text":"Filter: är pool inte vald släpps alla igenom, annars bara boenden med pool."},{"line":54,"text":"Inget maxavstånd angivet betyder inget filter."},{"line":56,"text":"Rummet får inte ha en enda bokning som..."},{"line":60,"text":"...börjar före den nya utcheckningen..."},{"line":61,"text":"...och slutar efter den nya incheckningen."},{"line":63,"text":"Sortering: lägst pris först eller högst omdöme först."}],"title":"Samma fråga som SearchAvailableRoomsAsync i Repository.cs","to":67,"what":"Värdena med @ är parametrar som programmet skickar in."}],"say":"Den viktigaste frågan i programmet. Den hämtar rum på orten som rymmer sällskapet, uppfyller filtren och inte har någon bokning som krockar."},"testdata":{"name":"Testdatat","refs":[{"code":"SET FOREIGN_KEY_CHECKS = 0;\nTRUNCATE TABLE booking;\nTRUNCATE TABLE room;\nTRUNCATE TABLE customer;\nTRUNCATE TABLE accommodation;\nSET FOREIGN_KEY_CHECKS = 1;","file":"sql/02_testdata.sql","from":28,"points":[{"line":29,"text":"Tömmer tabellen och nollställer räknaren för id."},{"line":33,"text":"Kontrollen slås på igen."}],"title":"Tabellerna töms","to":33,"what":"Nycklarna stängs av en stund så att tabellerna kan tömmas i valfri ordning."},{"code":"-- Kontroll: ska visa 6 boenden, 22 rum, 5 kunder och 25 bokningar.\nSELECT\n    (SELECT COUNT(*) FROM accommodation) AS boenden,\n    (SELECT COUNT(*) FROM room)          AS rum,\n    (SELECT COUNT(*) FROM customer)      AS kunder,\n    (SELECT COUNT(*) FROM booking)       AS bokningar;","file":"sql/02_testdata.sql","from":112,"points":[],"title":"Kontroll i slutet","to":117,"what":"Visar hur många rader varje tabell fick."}],"say":"Skriptet tömmer tabellerna och fyller dem igen, så det går att köra om när som helst. Varje bokning passerar triggern, så att skriptet går igenom bevisar att ingen bokning krockar."},"total":{"name":"Totalpriset sparas inte","refs":[{"code":"-- Totalpris lagras INTE. Det räknas ut som antal nätter × rummets pris\n-- per natt när det visas, så att det aldrig kan säga emot datumen.","file":"sql/01_create_database.sql","from":87,"points":[],"title":"Beslutet i SQL-filen","to":88,"what":"Därför finns ingen kolumn för totalpris i booking."},{"code":"SELECT  b.id,\n        a.name AS accommodation_name,\n        a.city,\n        r.room_number,\n        r.capacity,\n        b.check_in,\n        b.check_out,\n        b.guests,\n        r.price_per_night,\n        DATEDIFF(b.check_out, b.check_in)                     AS natter,\n        DATEDIFF(b.check_out, b.check_in) * r.price_per_night AS totalpris\n  FROM  booking b\n  JOIN  room r          ON r.id = b.room_id\n  JOIN  accommodation a ON a.id = r.accommodation_id\n WHERE  b.customer_id = @customerId\n ORDER BY b.check_in, b.id;","file":"sql/03_testfragor.sql","from":234,"points":[{"line":243,"text":"Antal nätter = utcheckning minus incheckning."},{"line":244,"text":"Nätter gånger rummets pris."}],"title":"Kundens bokningar med uträknat pris","to":249,"what":"Samma fråga som GetBookingsForCustomerAsync. De två sista kolumnerna räknar ut nätter och pris."}],"say":"Totalpriset är antal nätter gånger priset per natt. Det räknas ut när det visas, så det kan aldrig säga emot datumen."},"trg-capacity":{"name":"Trigger: antal personer måste rymmas i rummet","refs":[{"code":"-- Två regler går inte att skriva som CHECK, eftersom ett CHECK-villkor\n-- bara ser den egna raden:\n--\n--   a) antalet personer måste rymmas i rummet   (en annan tabell: room)\n--   b) perioden får inte krocka med en annan bokning  (andra rader)","file":"sql/01_create_database.sql","from":117,"points":[],"title":"Varför en trigger","to":121,"what":"Kommentaren i SQL-filen förklarar valet."},{"code":"CREATE TRIGGER trg_booking_before_insert\nBEFORE INSERT ON booking\nFOR EACH ROW\nBEGIN\n    DECLARE v_capacity  TINYINT UNSIGNED;\n    DECLARE v_conflicts INT;\n\n    SELECT capacity INTO v_capacity FROM room WHERE id = NEW.room_id;\n    IF NEW.guests > v_capacity THEN\n        SIGNAL SQLSTATE '45000'\n            SET MESSAGE_TEXT = 'Antal personer ryms inte i rummet';\n    END IF;","file":"sql/01_create_database.sql","from":133,"points":[{"line":134,"text":"Körs innan raden sparas, så den kan stoppas."},{"line":140,"text":"Hämtar hur många rummet rymmer."},{"line":141,"text":"NEW är den nya bokningen. Fler gäster än platser?"},{"line":142,"text":"Då avbryts sparandet med ett felmeddelande."}],"title":"Triggern vid ny bokning (början)","to":144,"what":"Körs före varje INSERT i booking."},{"code":"CREATE TRIGGER trg_booking_before_update\nBEFORE UPDATE ON booking\nFOR EACH ROW\nBEGIN\n    DECLARE v_capacity  TINYINT UNSIGNED;\n    DECLARE v_conflicts INT;\n\n    SELECT capacity INTO v_capacity FROM room WHERE id = NEW.room_id;\n    IF NEW.guests > v_capacity THEN\n        SIGNAL SQLSTATE '45000'\n            SET MESSAGE_TEXT = 'Antal personer ryms inte i rummet';\n    END IF;","file":"sql/01_create_database.sql","from":157,"points":[{"line":158,"text":"Körs före varje ändring."}],"title":"Samma kontroll när en bokning ändras","to":168,"what":"Ändras antal gäster körs samma kontroll."}],"say":"Ett CHECK-villkor ser bara den egna raden. Rummets storlek står i en annan tabell, så regeln ligger i en trigger som körs innan en bokning sparas eller ändras."},"trg-overlap":{"name":"Trigger: ingen annan bokning av rummet får krocka","refs":[{"code":"-- Två perioder krockar när den ena börjar före den andras slut OCH\n-- slutar efter den andras början. Jämförelserna är strikta (< och >),\n-- så en gäst kan checka in samma dag som den förra checkar ut.","file":"sql/01_create_database.sql","from":127,"points":[],"title":"När krockar två perioder?","to":129,"what":"Den ena börjar före den andras slut OCH slutar efter den andras början."},{"code":"SELECT COUNT(*) INTO v_conflicts\n  FROM booking\n WHERE room_id   = NEW.room_id\n   AND check_in  < NEW.check_out\n   AND check_out > NEW.check_in;\nIF v_conflicts > 0 THEN\n    SIGNAL SQLSTATE '45000'\n        SET MESSAGE_TEXT = 'Rummet har redan en bokning under perioden';\nEND IF;","file":"sql/01_create_database.sql","from":146,"points":[{"line":148,"text":"Bara samma rum."},{"line":149,"text":"Den gamla börjar innan den nya slutar..."},{"line":150,"text":"...och slutar efter att den nya börjar. Strikt > betyder att utcheckningsdagen är ledig."},{"line":151,"text":"Finns minst en krock stoppas bokningen."}],"title":"Kontrollen vid ny bokning","to":154,"what":"Räknar bokningar av samma rum som överlappar den nya."},{"code":"-- Samma kontroll som vid INSERT, men den egna raden räknas inte.\nSELECT COUNT(*) INTO v_conflicts\n  FROM booking\n WHERE room_id   = NEW.room_id\n   AND id       <> NEW.id\n   AND check_in  < NEW.check_out\n   AND check_out > NEW.check_in;\nIF v_conflicts > 0 THEN\n    SIGNAL SQLSTATE '45000'\n        SET MESSAGE_TEXT = 'Rummet har redan en bokning under perioden';\nEND IF;","file":"sql/01_create_database.sql","from":170,"points":[{"line":174,"text":"Hoppar över raden som ändras."}],"title":"Kontrollen vid ändring","to":180,"what":"Som ovan, men den egna bokningen räknas inte."}],"say":"Två bokningar av samma rum får inte överlappa. Det kräver att man tittar på andra rader i booking, så även den regeln ligger i triggern."},"user":{"name":"Programmets egen databasanvändare","refs":[{"code":"CREATE USER IF NOT EXISTS 'holiday_app'@'localhost' IDENTIFIED BY 'Byt_mig_123!';\nALTER USER 'holiday_app'@'localhost' IDENTIFIED BY 'Byt_mig_123!';\nGRANT SELECT, INSERT, UPDATE, DELETE ON holiday_maker.* TO 'holiday_app'@'localhost';","file":"sql/01_create_database.sql","from":202,"points":[{"line":202,"text":"Skapar användaren om den inte finns."},{"line":203,"text":"Sätter lösenordet även om användaren fanns sedan förut."},{"line":204,"text":"Bara de fyra radoperationerna, och bara i holiday_maker."}],"title":"Användaren och dess rättigheter","to":204,"what":"Lösenordet är ett exempel och står också i config.json."}],"say":"Programmet loggar inte in som root. Det har en egen användare som bara får läsa och ändra rader, inte skapa eller ta bort tabeller."}},"order":["accommodation","room","customer","booking","rel-acc-room","rel-room-booking","rel-cust-booking","db","trg-capacity","trg-overlap","search","total","conflict","user","testdata","checks"]}</script>
+<script>
+(function () {
+  var DATA = JSON.parse(document.getElementById('data').textContent);
+  var panel = document.getElementById('panel');
+  var current = -1;
+
+  var KW = ('ADD AFTER ALTER AND AS ASC AUTO_INCREMENT BEFORE BEGIN BETWEEN BOOLEAN BY CASCADE CASE CHARACTER CHECK COLLATE CONSTRAINT COUNT CREATE CURRENT_TIMESTAMP DATABASE DATE DATEDIFF DATETIME DECIMAL DECLARE DEFAULT DELETE DELIMITER DESC DROP EACH ELSE END ENGINE EXISTS FALSE FOREIGN FOR FROM GRANT IDENTIFIED IF IN INDEX INSERT INT INTO IS JOIN KEY LIKE MESSAGE_TEXT NAMES NEW NOT NULL ON OR ORDER PRIMARY REFERENCES RESTRICT ROW SELECT SET SIGNAL SQLSTATE TABLE THEN TINYINT TO TRIGGER TRUE TRUNCATE UNION ALL UNIQUE UNSIGNED UPDATE USE USER VALUES VARCHAR WHEN WHERE FOREIGN_KEY_CHECKS').split(' ');
+
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  // Delar SQL-koden i bitar: [klass, text]
+  function tokens(code) {
+    var out = [], re = /(--[^\n]*)|('(?:[^'\\\n]|\\.)*')|(@[A-Za-z_]+)|([A-Za-z_][A-Za-z0-9_]*)|([0-9]+(?:\.[0-9]+)?)|([\s\S])/g, m;
+    while ((m = re.exec(code))) {
+      if (m[1]) out.push(['t-com', m[1]]);
+      else if (m[2]) out.push(['t-str', m[2]]);
+      else if (m[3]) out.push(['t-par', m[3]]);
+      else if (m[4]) out.push([KW.indexOf(m[4]) >= 0 ? 't-kw' : '', m[4]]);
+      else if (m[5]) out.push(['t-num', m[5]]);
+      else out.push(['', m[6]]);
+    }
+    return out;
+  }
+
+  function highlightLines(code) {
+    var lines = [''];
+    tokens(code).forEach(function (t) {
+      t[1].split('\n').forEach(function (p, k) {
+        if (k > 0) lines.push('');
+        if (p.length) lines[lines.length - 1] += t[0] ? '<span class="' + t[0] + '">' + esc(p) + '</span>' : esc(p);
+      });
+    });
+    return lines;
+  }
+
+  function render(idx) {
+    var id = DATA.order[idx], node = DATA.nodes[id];
+    current = idx;
+    document.querySelectorAll('.sel').forEach(function (e) { e.classList.remove('sel'); });
+    document.querySelectorAll('.col.on').forEach(function (e) { e.classList.remove('on'); });
+    document.querySelectorAll('.ent[data-id="' + id + '"], .rel[data-id="' + id + '"], .more[data-id="' + id + '"]').forEach(function (e) { e.classList.add('sel'); });
+    document.getElementById('pos').textContent = (idx + 1) + ' / ' + DATA.order.length;
+
+    var h = '<h2>' + esc(node.name) + '</h2>';
+    h += '<div class="say"><b>Enkelt förklarat</b>' + esc(node.say) + '</div>';
+    node.refs.forEach(function (r, ri) {
+      var marked = {};
+      r.points.forEach(function (p) { marked[p.line] = true; });
+      h += '<div class="ref" data-ref="' + ri + '"><h3>' + esc(r.title) + '</h3>';
+      h += '<div class="where">' + esc(r.file) + ', rad ' + r.from + (r.to > r.from ? '–' + r.to : '') + '</div>';
+      h += '<p class="what">' + esc(r.what) + '</p>';
+      h += '<div class="code"><table>';
+      highlightLines(r.code).forEach(function (ln, k) {
+        var no = r.from + k;
+        h += '<tr data-line="' + no + '"' + (marked[no] ? ' class="mark"' : '') + '><td class="n">' + no + '</td><td>' + (ln || ' ') + '</td></tr>';
+      });
+      h += '</table></div>';
+      if (r.points.length) {
+        h += '<ul class="pts">';
+        r.points.forEach(function (p) {
+          h += '<li data-line="' + p.line + '" tabindex="0"><span class="ln-no">Rad ' + p.line + '</span><span>' + esc(p.text) + '</span></li>';
+        });
+        h += '</ul>';
+      }
+      h += '</div>';
+    });
+    panel.innerHTML = h;
+    panel.scrollTop = 0;
+    try { history.replaceState(null, '', '#' + id); } catch (e) {}
+  }
+
+  // Markerar en rad i koden, och kolumnen i diagrammet om raden är en kolumn
+  function point(li, scroll) {
+    var ref = li.closest('.ref'), line = li.getAttribute('data-line');
+    panel.querySelectorAll('tr.hl').forEach(function (e) { e.classList.remove('hl'); });
+    panel.querySelectorAll('li.on').forEach(function (e) { e.classList.remove('on'); });
+    document.querySelectorAll('.col.on').forEach(function (e) { e.classList.remove('on'); });
+    var tr = ref.querySelector('tr[data-line="' + line + '"]');
+    if (tr) tr.classList.add('hl');
+    li.classList.add('on');
+    if (scroll) li.scrollIntoView({ block: 'center' });
+    else if (tr) tr.scrollIntoView({ block: 'nearest' });
+    if (ref.getAttribute('data-ref') === '0') {
+      var col = document.querySelector('.col[data-id="' + DATA.order[current] + '"][data-line="' + line + '"]');
+      if (col) col.classList.add('on');
+    }
+  }
+
+  function open(id, line) {
+    render(DATA.order.indexOf(id));
+    if (line) {
+      var li = panel.querySelector('.ref[data-ref="0"] li[data-line="' + line + '"]');
+      if (li) point(li, true);
+    }
+  }
+
+  function step(d) {
+    var n = DATA.order.length;
+    render(current < 0 ? 0 : (current + d + n) % n);
+  }
+
+  document.querySelectorAll('.node, .more').forEach(function (g) {
+    function go() { open(g.getAttribute('data-id'), g.getAttribute('data-line')); }
+    g.addEventListener('click', go);
+    if (g.classList.contains('node')) g.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+  });
+  panel.addEventListener('click', function (e) { var li = e.target.closest('ul.pts li'); if (li) point(li); });
+  panel.addEventListener('mouseover', function (e) { var li = e.target.closest('ul.pts li'); if (li) point(li); });
+  panel.addEventListener('keydown', function (e) { var li = e.target.closest('ul.pts li'); if (li && e.key === 'Enter') point(li); });
+  document.getElementById('prev').addEventListener('click', function () { step(-1); });
+  document.getElementById('next').addEventListener('click', function () { step(1); });
+  document.addEventListener('keydown', function (e) {
+    if (e.target.closest && e.target.closest('.node, ul.pts li')) return;
+    if (e.key === 'ArrowRight') step(1);
+    if (e.key === 'ArrowLeft') step(-1);
+  });
+  document.getElementById('theme').addEventListener('click', function () {
+    var root = document.documentElement, dark = root.getAttribute('data-theme');
+    if (!dark) dark = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    root.setAttribute('data-theme', dark === 'dark' ? 'light' : 'dark');
+  });
+
+  var start = DATA.order.indexOf(location.hash.slice(1));
+  if (start >= 0) render(start);
+})();
+</script>
+</body>
+</html>
