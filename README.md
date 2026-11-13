@@ -15,7 +15,7 @@ sql/03_testfragor.sql        Programmets SQL-frågor, körbara i en databasklien
 src/HolidayMaker/            Konsolapplikationens källkod
 docs/er-diagram.pdf          E/R-diagram
 docs/testprotokoll.md        Hur lösningen är testad, och resultaten
-docs/reflektion.md           Individuell reflektion
+docs/reflektion.pdf          Individuell reflektion
 flodesschema.html            Klickbart flödesschema: varje steg i programmet med koden bakom
 databasschema.html           Klickbart E/R-diagram: varje tabell, kolumn och relation med SQL-koden bakom
 ```
